@@ -2,8 +2,9 @@ Package: ukgasapi
 Title: API for UK Gas Market Information
 Version: 0.10
 Authors@R: person("Timothy", "Wong", email = "timothy.wong@hotmail.co.uk", role = c("aut", "cre"))
+Author: Timothy Wong [aut, cre]
 Maintainer: Timothy Wong <timothy.wong@hotmail.co.uk>
-Description: The package contains one function which calls National Grid's API.
+Description: Contains one function which allows users to access UK gas market information via National Grid's API.
 Depends: R (>= 3.2.2)
 BugReports: https://github.com/timothy-wong/ukgasapi/issues
 License: GPL-2
