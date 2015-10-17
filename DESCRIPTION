@@ -8,6 +8,6 @@ Description: Contains one function which allows users to access UK gas market in
 Depends: R (>= 3.2.2)
 BugReports: https://github.com/timothy-wong/ukgasapi/issues
 License: GPL-2
-Imports: RCurl,XML,reshape,stringr
+Imports: RCurl,XML
 LazyData: true
 Suggests:ggplot2

@@ -47,8 +47,8 @@ dataItemExplorer<- function(dataitems,
   # Loads neccessary packages
   requireNamespace('RCurl')
   requireNamespace('XML')
-  requireNamespace('reshape')
-  requireNamespace('stringr')
+  #requireNamespace('reshape')
+  #requireNamespace('stringr')
 
   # Creates SOAP XML request
   soap.request <- paste0('<?xml version="1.0" encoding="utf-8"?><soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope"><soap12:Body><GetPublicationDataWM xmlns="http://www.NationalGrid.com/MIPI/"><reqObject><LatestFlag>',latestflag,'</LatestFlag><ApplicableForFlag>',applicableforflag,'</ApplicableForFlag><ToDate>',todate,'</ToDate><FromDate>',fromdate,'</FromDate><DateType>',datetype,'</DateType><PublicationObjectNameList>',paste0('<string>',dataitems,'</string>', collapse = ''),'</PublicationObjectNameList></reqObject></GetPublicationDataWM></soap12:Body></soap12:Envelope>')
