@@ -6,8 +6,7 @@
 \usage{
 dataItemExplorer(dataitems, fromdate, todate, datetype = "gasday",
   latestflag = "Y", applicableforflag = "Y",
-  apiurl = "http://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx",
-  http_proxy = NULL)
+  apiurl = "http://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx")
 }
 \arguments{
 \item{dataitems}{A vector of characters containing data items to enquire via API.}
@@ -23,8 +22,6 @@ dataItemExplorer(dataitems, fromdate, todate, datetype = "gasday",
 \item{applicableforflag}{A character object with length of one to specify whether dates specified are 'applicable for' or 'applicable on'. This can either be \code{Y} or \code{N} where \code{Y} indicates 'applicable for'. Defaults to \code{Y}.}
 
 \item{apiurl}{A character object which points to National Grid's SOAP API. Under most circumstances users do not have to change this. Defaults to 'http://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx'}
-
-\item{http_proxy}{A character object which points to your proxy server. This will assign the specified value to environment variable \code{http_proxy}. It will not assign anything if the value is \code{NULL}. Defaults to \code{NULL}.}
 }
 \value{
 A dataframe object containing API response data.
@@ -43,10 +40,6 @@ dataitems <- c('Storage Injection, Actual','Storage Withdrawal, Actual')
 
 # Initialise API (requires internet connection for this step)
 response <- dataItemExplorer(dataitems,fromdate = '2013-10-01', todate='2015-09-30')
-
-# Convert the results to appropiate types
-response$ApplicableFor <- as.Date(response$ApplicableFor)
-response$Value <- as.numeric(response$Value)
 
 # Visualise the results on a chart
 ggplot(response,aes(x=ApplicableFor,y=Value,colour=PublicationObjectName)) + geom_line()
