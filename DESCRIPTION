@@ -4,8 +4,8 @@ Version: 0.12
 Authors@R: person("Timothy", "Wong", email = "timothy.wong@hotmail.co.uk", role = c("aut", "cre"))
 Author: Timothy Wong [aut, cre]
 Maintainer: Timothy Wong <timothy.wong@hotmail.co.uk>
-Description: Contains one function which allows users to access UK gas market information via National Grid's API.
-Depends: R (>= 3.2.2)
+Description: Allows users to access live UK gas market information via National Grid's API.
+Depends: R (>= 3.0.0)
 BugReports: https://github.com/timothy-wong/ukgasapi/issues
 License: GPL-2
 Imports: RCurl,XML

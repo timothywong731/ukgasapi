@@ -33,15 +33,17 @@ This function connects to the UK National Grid's API for Data Item Explorer, whi
 The function submits an enquiry to the destination API using XML over HTTP using SOAP standard. The HTTP response is in XML format which function will parse internally and return a R dataframe object.
 }
 \examples{
-library(ggplot2)
-
 # Specify the data item(s) to enquire from API
-dataitems <- c('Storage Injection, Actual','Storage Withdrawal, Actual')
+dataitems <- c('Storage Injection, Actual',
+               'Storage Withdrawal, Actual')
 
 # Initialise API (requires internet connection for this step)
-response <- dataItemExplorer(dataitems,fromdate = '2013-10-01', todate='2015-09-30')
+response <- dataItemExplorer(dataitems,
+                             fromdate = '2013-10-01',
+                             todate='2015-09-30')
 
 # Visualise the results on a chart
+library(ggplot2)
 ggplot(response,aes(x=ApplicableFor,y=Value,colour=PublicationObjectName)) + geom_line()
 }
 \author{

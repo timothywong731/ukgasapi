@@ -11,15 +11,17 @@
 #' @param apiurl A character object which points to National Grid's SOAP API. Under most circumstances users do not have to change this. Defaults to 'http://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx'
 #' @return A dataframe object containing API response data.
 #' @examples
-#' library(ggplot2)
-#'
 #' # Specify the data item(s) to enquire from API
-#' dataitems <- c('Storage Injection, Actual','Storage Withdrawal, Actual')
+#' dataitems <- c('Storage Injection, Actual',
+#'                'Storage Withdrawal, Actual')
 #'
 #' # Initialise API (requires internet connection for this step)
-#' response <- dataItemExplorer(dataitems,fromdate = '2013-10-01', todate='2015-09-30')
+#' response <- dataItemExplorer(dataitems,
+#'                              fromdate = '2013-10-01',
+#'                              todate='2015-09-30')
 #'
 #' # Visualise the results on a chart
+#' library(ggplot2)
 #' ggplot(response,aes(x=ApplicableFor,y=Value,colour=PublicationObjectName)) + geom_line()
 #' @author Timothy Wong, \email{timothy.wong@@hotmail.co.uk}
 #' @references
@@ -39,7 +41,7 @@ dataItemExplorer<- function(dataitems,
                             apiurl = 'http://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx') {
 
   # Creates SOAP XML request
-  soap.request <- paste0('<?xml version="1.0" encoding="utf-8"?><soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope"><soap12:Body><GetPublicationDataWM xmlns="http://www.NationalGrid.com/MIPI/"><reqObject><LatestFlag>',latestflag,'</LatestFlag><ApplicableForFlag>',applicableforflag,'</ApplicableForFlag><ToDate>',todate,'</ToDate><FromDate>',fromdate,'</FromDate><DateType>',datetype,'</DateType><PublicationObjectNameList>',paste0('<string>',dataitems,'</string>', collapse = ''),'</PublicationObjectNameList></reqObject></GetPublicationDataWM></soap12:Body></soap12:Envelope>')
+  soap.request <- base::paste0('<?xml version="1.0" encoding="utf-8"?><soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope"><soap12:Body><GetPublicationDataWM xmlns="http://www.NationalGrid.com/MIPI/"><reqObject><LatestFlag>',latestflag,'</LatestFlag><ApplicableForFlag>',applicableforflag,'</ApplicableForFlag><ToDate>',todate,'</ToDate><FromDate>',fromdate,'</FromDate><DateType>',datetype,'</DateType><PublicationObjectNameList>',paste0('<string>',dataitems,'</string>', collapse = ''),'</PublicationObjectNameList></reqObject></GetPublicationDataWM></soap12:Body></soap12:Envelope>')
 
   # Initialises a text gatherer
   h <- RCurl::basicTextGatherer()
@@ -63,15 +65,15 @@ dataItemExplorer<- function(dataitems,
     # Porcessing data frames
     rows <- objects[[i]][['PublicationObjectData']]
 
-    list.of.rows <- data.frame()
+    list.of.rows <- base::data.frame()
 
     for(r in 1:length(rows)){
       # Processing individual row
-      list.of.rows <- rbind(list.of.rows,as.data.frame(rows[r][[1]],stringsAsFactors = FALSE))
+      list.of.rows <- base::rbind(list.of.rows,as.data.frame(rows[r][[1]],stringsAsFactors = FALSE))
     }
     list.of.rows$PublicationObjectName <- objects[[i]][[1]]
 
-    list.of.data.frames <- rbind(list.of.data.frames, as.data.frame(list.of.rows))
+    list.of.data.frames <- base::rbind(list.of.data.frames, as.data.frame(list.of.rows))
   }
 
   # Convert all columns to appropiate types before returning data frame
