@@ -1,6 +1,6 @@
 Package: ukgasapi
 Title: API for UK Gas Market Information
-Version: 0.12
+Version: 0.13
 Authors@R: person("Timothy", "Wong", email = "timothy.wong@hotmail.co.uk", role = c("aut", "cre"))
 Author: Timothy Wong [aut, cre]
 Maintainer: Timothy Wong <timothy.wong@hotmail.co.uk>
