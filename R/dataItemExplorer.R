@@ -1,4 +1,3 @@
-
 #' @title Data Item Explorer API
 #' @description This function connects to the UK National Grid's API for Data Item Explorer, which is a major data source for gas-related information. Internet connection must be available.
 #' @details The function submits an enquiry to the destination API using XML over HTTP using SOAP standard. The HTTP response is in XML format which function will parse internally and return a R dataframe object.
@@ -12,33 +11,33 @@
 #' @return A dataframe object containing API response data.
 #' @examples
 #' # Specify the data item(s) to enquire from API
-#' dataitems <- c('Storage Injection, Actual',
-#'                'Storage Withdrawal, Actual')
+#' dataitems <- c("Storage Injection, Actual",
+#'                "Storage Withdrawal, Actual")
 #'
 #' # Initialise API (requires internet connection for this step)
 #' response <- dataItemExplorer(dataitems,
-#'                              fromdate = '2013-10-01',
-#'                              todate='2015-09-30')
+#'                              fromdate = "2017-01-01",
+#'                              todate="2018-06-30")
 #'
 #' # Visualise the results on a chart
-#' library(ggplot2)
-#' ggplot(response,aes(x=ApplicableFor,y=Value,colour=PublicationObjectName)) + geom_line()
+#' plot(Value ~ ApplicableFor, type="o",data=response, col=PublicationObjectName)
 #' @author Timothy Wong, \email{timothy.wong@@hotmail.co.uk}
 #' @references
 #' \itemize{
 #' \item Graphical User Interface for Data Item Explorer\cr
-#' \url{http://www2.nationalgrid.com/uk/industry-information/gas-transmission-operational-data/data-item-explorer/}
+#' \url{https://www2.nationalgrid.com/uk/industry-information/gas-transmission-operational-data/data-item-explorer/}
 #' \item API specification\cr
-#' \url{http://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx?op=GetPublicationDataWM}
+#' \url{https://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx?op=GetPublicationDataWM}
 #' }
 #' @export
 dataItemExplorer<- function(dataitems,
                             fromdate,
                             todate,
-                            datetype='gasday',
-                            latestflag='Y',
-                            applicableforflag='Y',
-                            apiurl = 'https://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx') {
+                            datetype="gasday",
+                            latestflag="Y",
+                            applicableforflag="Y",
+                            apiurl = paste0("https://marketinformation.natgrid.co.uk/",
+                            "MIPIws-public/public/publicwebservice.asmx")) {
 
   # Creates SOAP XML request
   soap.request <- base::paste0('<?xml version="1.0" encoding="utf-8"?><soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope"><soap12:Body><GetPublicationDataWM xmlns="http://www.NationalGrid.com/MIPI/"><reqObject><LatestFlag>',latestflag,'</LatestFlag><ApplicableForFlag>',applicableforflag,'</ApplicableForFlag><ToDate>',todate,'</ToDate><FromDate>',fromdate,'</FromDate><DateType>',datetype,'</DateType><PublicationObjectNameList>',paste0('<string>',dataitems,'</string>', collapse = ''),'</PublicationObjectNameList></reqObject></GetPublicationDataWM></soap12:Body></soap12:Envelope>')
@@ -48,7 +47,7 @@ dataItemExplorer<- function(dataitems,
   h$reset()
 
   # Initiates SOAP request via HTTP
-  RCurl::curlPerform(url = apiurl, httpheader = c(Accept="text/xml", 'Content-Type'='application/soap+xml; charset=utf-8'),postfields = soap.request, verbose=TRUE, writefunction = h$update)
+  RCurl::curlPerform(url = apiurl, httpheader = c(Accept="text/xml", "Content-Type"="application/soap+xml; charset=utf-8"),postfields = soap.request, verbose=TRUE, writefunction = h$update)
 
   # Writes SOAP response into character
   soap.response <- h$value()
@@ -63,7 +62,7 @@ dataItemExplorer<- function(dataitems,
 
   for(i in 1:length(objects)) {
     # Porcessing data frames
-    rows <- objects[[i]][['PublicationObjectData']]
+    rows <- objects[[i]][["PublicationObjectData"]]
 
     list.of.rows <- base::data.frame()
 
@@ -78,13 +77,13 @@ dataItemExplorer<- function(dataitems,
 
   # Convert all columns to appropiate types before returning data frame
   result <- base::within(data = list.of.data.frames,expr = {
-    ApplicableAt <- strptime(ApplicableAt,'%Y-%m-%dT%H:%M:%SZ','UTC')
-    ApplicableFor <- strptime(ApplicableFor,'%Y-%m-%dT%H:%M:%SZ','UTC')
+    ApplicableAt <- as.POSIXct(strptime(ApplicableAt,"%Y-%m-%dT%H:%M:%SZ","UTC"))
+    ApplicableFor <- as.POSIXct(strptime(ApplicableFor,"%Y-%m-%dT%H:%M:%SZ","UTC"))
     Value <- as.numeric(Value)
-    GeneratedTimeStamp <- strptime(GeneratedTimeStamp,'%Y-%m-%dT%H:%M:%SZ','UTC')
+    GeneratedTimeStamp <- as.POSIXct(strptime(GeneratedTimeStamp,"%Y-%m-%dT%H:%M:%SZ","UTC"))
     QualityIndicator <- factor(QualityIndicator)
     Substituted <- factor(QualityIndicator)
-    CreatedDate <- strptime(CreatedDate,'%Y-%m-%dT%H:%M:%SZ','UTC')
+    CreatedDate <- as.POSIXct(strptime(CreatedDate,"%Y-%m-%dT%H:%M:%SZ","UTC"))
     PublicationObjectName <- as.factor(PublicationObjectName)
   })
 
