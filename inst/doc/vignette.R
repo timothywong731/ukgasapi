@@ -9,7 +9,7 @@ library(ukgasapi)
 response <- dataItemExplorer(dataitems = c("Storage Injection, Actual",
                                            "Storage Withdrawal, Actual"),
                              fromdate = "2017-01-01",
-                             todate = "2018-06-30")
+                             todate = "2017-12-31")
 head(response, 10)
 
 ## ----echo=FALSE,results='asis'-------------------------------------------
