@@ -8,6 +8,7 @@
 #' @param datetype A character object specifying the data type. Defaults to \code{gasday}
 #' @param latestflag A character object with length of one to specify whether to extract the latest data. This can either be \code{Y} or \code{N}. Defaults to \code{Y}.
 #' @param applicableforflag A character object with length of one to specify whether dates specified are 'applicable for' or 'applicable on'. This can either be \code{Y} or \code{N} where \code{Y} indicates 'applicable for'. Defaults to \code{Y}.
+#' @param batchsize An interger value indicating the batch size of each API call. To invoke a single API call, use any zero of negative values.
 #' @param apiurl A character object which points to National Grid's SOAP API. Under most circumstances users do not have to change this. Defaults to 'http://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx'
 #' @return A dataframe object containing API response data.
 #' @examples
@@ -38,62 +39,115 @@ dataItemExplorer<- function(dataitems,
                             datetype="gasday",
                             latestflag="Y",
                             applicableforflag="Y",
+                            batchsize = -1,
                             apiurl = paste0("https://marketinformation.natgrid.co.uk/",
                                             "MIPIws-public/public/publicwebservice.asmx")) {
 
-  # Creates SOAP XML request
-  soap.request <- base::paste0('<?xml version="1.0" encoding="utf-8"?><soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope"><soap12:Body><GetPublicationDataWM xmlns="http://www.NationalGrid.com/MIPI/"><reqObject><LatestFlag>',latestflag,'</LatestFlag><ApplicableForFlag>',applicableforflag,'</ApplicableForFlag><ToDate>',todate,'</ToDate><FromDate>',fromdate,'</FromDate><DateType>',datetype,'</DateType><PublicationObjectNameList>',paste0('<string>',dataitems,'</string>', collapse = ''),'</PublicationObjectNameList></reqObject></GetPublicationDataWM></soap12:Body></soap12:Envelope>')
+  # Using batch mode
+  if (batchsize > 0) {
 
-  # Initialises a text gatherer
-  h <- RCurl::basicTextGatherer()
-  h$reset()
+    # Calculate batch IDs
+    batch.quotient <- as.integer(as.Date(todate) - as.Date(fromdate) + 1) %/% batchsize
+    batch.modulo <- as.integer(as.Date(todate) - as.Date(fromdate) + 1) %% batchsize
 
-  # Initiates SOAP request via HTTP
-  RCurl::curlPerform(url = apiurl, httpheader = c(Accept="text/xml", 'Content-Type'='application/soap+xml; charset=utf-8'),postfields = soap.request, verbose=TRUE, writefunction = h$update)
-
-  # Writes SOAP response into character
-  soap.response <- h$value()
-
-  # converts SOAP response into an XML object
-  soap.response.doc <- XML::xmlTreeParse(soap.response, replaceEntities = TRUE , useInternalNodes = TRUE)
-
-  # converts SOAP response into a list of objects
-  objects <- (XML::xmlToList(soap.response.doc,simplify = TRUE))[[1]][[1]]
-
-  list.of.data.frames<-list()
-
-  for(i in 1:length(objects)) {
-    # Porcessing data frames
-    rows <- objects[[i]][["PublicationObjectData"]]
-
-    list.of.rows <- base::data.frame()
-
-    for(r in 1:length(rows)){
-      # Processing individual row
-      list.of.rows <- base::rbind(list.of.rows,as.data.frame(rows[r][[1]],stringsAsFactors = FALSE))
+    # Create a row for each batch
+    if (batch.quotient >0) {
+      list.of.dates <- base::data.frame(
+        start = 1:batch.quotient * batchsize - batchsize+1,
+        end = 1:batch.quotient * batchsize)
+    } else {
+      list.of.dates <- base::data.frame(start = integer(),
+                                        end = integer())
     }
-    list.of.rows$PublicationObjectName <- objects[[i]][[1]]
 
-    list.of.data.frames <- base::rbind(list.of.data.frames, as.data.frame(list.of.rows))
+    # Append a row if there's any remainder (modulo)
+    if(batch.modulo > 0) {
+      list.of.dates <- rbind(list.of.dates,
+                             base::data.frame(
+                               start = batch.quotient * batchsize+1,
+                               end = batch.quotient * batchsize + batch.modulo))
+    }
+
+    # Create a sequence of all dates
+    all.dates <- seq.Date(fromdate, todate,1)
+
+    # Create an empty list of data frames
+    results <- list()
+
+    # Loop through all batch an run the API
+    for (i in 1:nrow(list.of.dates)) {
+      batch.fromdate <- all.dates[list.of.dates[i,]$start]
+      batch.todate <- all.dates[list.of.dates[i,]$end]
+      results[[i]] <- dataItemExplorer(
+        dataitems = dataitems,
+        fromdate = batch.fromdate,
+        todate = batch.todate,
+        datetype = datetype,
+        latestflag = latestflag,
+        applicableforflag = applicableforflag,
+        batchsize = -1,
+        apiurl = apiurl)
+    }
+
+    return(do.call(rbind, results))
+
+  } else {
+    # Non-batch mode
+
+    # Creates SOAP XML request
+    soap.request <- base::paste0('<?xml version="1.0" encoding="utf-8"?><soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope"><soap12:Body><GetPublicationDataWM xmlns="http://www.NationalGrid.com/MIPI/"><reqObject><LatestFlag>',latestflag,'</LatestFlag><ApplicableForFlag>',applicableforflag,'</ApplicableForFlag><ToDate>',todate,'</ToDate><FromDate>',fromdate,'</FromDate><DateType>',datetype,'</DateType><PublicationObjectNameList>',paste0('<string>',dataitems,'</string>', collapse = ''),'</PublicationObjectNameList></reqObject></GetPublicationDataWM></soap12:Body></soap12:Envelope>')
+
+    # Initialises a text gatherer
+    h <- RCurl::basicTextGatherer()
+    h$reset()
+
+    # Initiates SOAP request via HTTP
+    RCurl::curlPerform(url = apiurl, httpheader = c(Accept="text/xml", 'Content-Type'='application/soap+xml; charset=utf-8'),postfields = soap.request, verbose=TRUE, writefunction = h$update)
+
+    # Writes SOAP response into character
+    soap.response <- h$value()
+
+    # converts SOAP response into an XML object
+    soap.response.doc <- XML::xmlTreeParse(soap.response, replaceEntities = TRUE , useInternalNodes = TRUE)
+
+    # converts SOAP response into a list of objects
+    objects <- (XML::xmlToList(soap.response.doc,simplify = TRUE))[[1]][[1]]
+
+    list.of.data.frames<-list()
+
+    for(i in 1:length(objects)) {
+      # Porcessing data frames
+      rows <- objects[[i]][["PublicationObjectData"]]
+
+      list.of.rows <- base::data.frame()
+
+      for(r in 1:length(rows)){
+        # Processing individual row
+        list.of.rows <- base::rbind(list.of.rows,as.data.frame(rows[r][[1]],stringsAsFactors = FALSE))
+      }
+      list.of.rows$PublicationObjectName <- objects[[i]][[1]]
+
+      list.of.data.frames <- base::rbind(list.of.data.frames, as.data.frame(list.of.rows))
+    }
+
+    # Convert all columns to appropiate types before returning data frame
+    result <- base::within(data = list.of.data.frames,expr = {
+      ApplicableAt <- strptime(ApplicableAt,"%Y-%m-%dT%H:%M:%SZ","UTC")
+      ApplicableFor <- strptime(ApplicableFor,"%Y-%m-%dT%H:%M:%SZ","UTC")
+      Value <- as.numeric(Value)
+      GeneratedTimeStamp <- strptime(GeneratedTimeStamp,"%Y-%m-%dT%H:%M:%SZ","UTC")
+      QualityIndicator <- factor(QualityIndicator)
+      Substituted <- factor(QualityIndicator)
+      CreatedDate <- strptime(CreatedDate,"%Y-%m-%dT%H:%M:%SZ","UTC")
+      PublicationObjectName <- as.factor(PublicationObjectName)
+    })
+
+    # Prefer using POSIXct rather than POSIXlt
+    result$ApplicableAt <- as.POSIXct(result$ApplicableAt)
+    result$ApplicableFor <- as.POSIXct(result$ApplicableFor)
+    result$GeneratedTimeStamp <- as.POSIXct(result$GeneratedTimeStamp)
+    result$CreatedDate <- as.POSIXct(result$CreatedDate)
+
+    return (result)
   }
-
-  # Convert all columns to appropiate types before returning data frame
-  result <- base::within(data = list.of.data.frames,expr = {
-    ApplicableAt <- strptime(ApplicableAt,"%Y-%m-%dT%H:%M:%SZ","UTC")
-    ApplicableFor <- strptime(ApplicableFor,"%Y-%m-%dT%H:%M:%SZ","UTC")
-    Value <- as.numeric(Value)
-    GeneratedTimeStamp <- strptime(GeneratedTimeStamp,"%Y-%m-%dT%H:%M:%SZ","UTC")
-    QualityIndicator <- factor(QualityIndicator)
-    Substituted <- factor(QualityIndicator)
-    CreatedDate <- strptime(CreatedDate,"%Y-%m-%dT%H:%M:%SZ","UTC")
-    PublicationObjectName <- as.factor(PublicationObjectName)
-  })
-
-  # Prefer using POSIXct rather than POSIXlt
-  result$ApplicableAt <- as.POSIXct(result$ApplicableAt)
-  result$ApplicableFor <- as.POSIXct(result$ApplicableFor)
-  result$GeneratedTimeStamp <- as.POSIXct(result$GeneratedTimeStamp)
-  result$CreatedDate <- as.POSIXct(result$CreatedDate)
-
-  return (result)
 }

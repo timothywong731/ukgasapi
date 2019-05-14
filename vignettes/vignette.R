@@ -15,6 +15,13 @@ head(response, 10)
 ## ----echo=FALSE,results='asis'-------------------------------------------
 knitr::kable(head(response,10))
 
+## ---- eval=FALSE---------------------------------------------------------
+#  response <- dataItemExplorer(dataitems = c("Storage Injection, Actual",
+#                                             "Storage Withdrawal, Actual"),
+#                               fromdate = "2017-01-01",
+#                               todate = "2017-12-31",
+#                               batchsize = 20)
+
 ## ----echo=TRUE,results='asis',fig.show='hold'----------------------------
 library(ggplot2)
 qplot(x = ApplicableFor,

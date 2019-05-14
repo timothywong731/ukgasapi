@@ -35,6 +35,18 @@ head(response, 10)
 knitr::kable(head(response,10))
 ```
 
+# Using batch mode
+
+The National Grid API has certain limit of the size of the query. As a result, we need to implement batch mode if the query it too large. The `batchsize` argument can be configured to limit the size of each API call. It will loop through all dates iteratively and return all results.
+
+```{r, eval=FALSE}
+response <- dataItemExplorer(dataitems = c("Storage Injection, Actual",
+                                           "Storage Withdrawal, Actual"),
+                             fromdate = "2017-01-01",
+                             todate = "2017-12-31",
+                             batchsize = 20)
+```
+
 # Visualising the API response
 
 Since the return type is a `data.frame` object, users can use standard plotting packages such as `ggplot2` to visualise the response.

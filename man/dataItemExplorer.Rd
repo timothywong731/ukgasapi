@@ -5,8 +5,9 @@
 \title{Data Item Explorer API}
 \usage{
 dataItemExplorer(dataitems, fromdate, todate, datetype = "gasday",
-  latestflag = "Y", applicableforflag = "Y",
-  apiurl = "https://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx")
+  latestflag = "Y", applicableforflag = "Y", batchsize = -1,
+  apiurl = paste0("https://marketinformation.natgrid.co.uk/",
+  "MIPIws-public/public/publicwebservice.asmx"))
 }
 \arguments{
 \item{dataitems}{A vector of characters containing data items to enquire via API.}
@@ -20,6 +21,8 @@ dataItemExplorer(dataitems, fromdate, todate, datetype = "gasday",
 \item{latestflag}{A character object with length of one to specify whether to extract the latest data. This can either be \code{Y} or \code{N}. Defaults to \code{Y}.}
 
 \item{applicableforflag}{A character object with length of one to specify whether dates specified are 'applicable for' or 'applicable on'. This can either be \code{Y} or \code{N} where \code{Y} indicates 'applicable for'. Defaults to \code{Y}.}
+
+\item{batchsize}{An interger value indicating the batch size of each API call. To invoke a single API call, use any zero of negative values.}
 
 \item{apiurl}{A character object which points to National Grid's SOAP API. Under most circumstances users do not have to change this. Defaults to 'http://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx'}
 }
