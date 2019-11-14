@@ -69,7 +69,7 @@ dataItemExplorer<- function(dataitems,
     }
 
     # Create a sequence of all dates
-    all.dates <- seq.Date(fromdate, todate,1)
+    all.dates <- seq.Date(as.Date(fromdate), as.Date(todate),1)
 
     # Create an empty list of data frames
     results <- list()
