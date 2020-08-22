@@ -1,4 +1,3 @@
-
 #' @title Data Item Explorer API
 #' @description This function connects to the UK National Grid's API for Data Item Explorer, which is a major data source for gas-related information. Internet connection must be available.
 #' @details The function submits an enquiry to the destination API using XML over HTTP using SOAP standard. The HTTP response is in XML format which function will parse internally and return a R dataframe object.
@@ -10,6 +9,7 @@
 #' @param applicableforflag A character object with length of one to specify whether dates specified are 'applicable for' or 'applicable on'. This can either be \code{Y} or \code{N} where \code{Y} indicates 'applicable for'. Defaults to \code{Y}.
 #' @param batchsize An interger value indicating the batch size of each API call. To invoke a single API call, use any zero of negative values.
 #' @param apiurl A character object which points to National Grid's SOAP API. Under most circumstances users do not have to change this. Defaults to 'http://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx'
+#' @param ... Additional arguments passed to \code{RCurl::curlPerform()}
 #' @return A dataframe object containing API response data.
 #' @examples
 #' # Specify the data item(s) to enquire from API
@@ -18,7 +18,7 @@
 #'
 #' # Initialise API (requires internet connection for this step)
 #' response <- dataItemExplorer(dataitems,
-#'                              fromdate = "2013-10-01",
+#'                              fromdate = "2015-09-01",
 #'                              todate="2015-09-30")
 #'
 #' # Visualise the results on a chart
@@ -97,15 +97,14 @@ dataItemExplorer<- function(dataitems,
     # Creates SOAP XML request
     soap.request <- base::paste0('<?xml version="1.0" encoding="utf-8"?><soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope"><soap12:Body><GetPublicationDataWM xmlns="http://www.NationalGrid.com/MIPI/"><reqObject><LatestFlag>',latestflag,'</LatestFlag><ApplicableForFlag>',applicableforflag,'</ApplicableForFlag><ToDate>',todate,'</ToDate><FromDate>',fromdate,'</FromDate><DateType>',datetype,'</DateType><PublicationObjectNameList>',paste0('<string>',dataitems,'</string>', collapse = ''),'</PublicationObjectNameList></reqObject></GetPublicationDataWM></soap12:Body></soap12:Envelope>')
 
-    # Initialises a text gatherer
-    h <- RCurl::basicTextGatherer()
-    h$reset()
-
     # Initiates SOAP request via HTTP
-    RCurl::curlPerform(url = apiurl, httpheader = c(Accept="text/xml", 'Content-Type'='application/soap+xml; charset=utf-8'),postfields = soap.request, verbose=TRUE, writefunction = h$update)
+    result <- httr::POST(apiurl,
+                         body = soap.request,
+                         httr::add_headers(.headers = c("Accept"="text/xml",
+                                                        "Content-Type"="application/soap+xml; charset=utf-8")))
 
     # Writes SOAP response into character
-    soap.response <- h$value()
+    soap.response <- content(result, "text")
 
     # converts SOAP response into an XML object
     soap.response.doc <- XML::xmlTreeParse(soap.response, replaceEntities = TRUE , useInternalNodes = TRUE)
