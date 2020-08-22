@@ -52,8 +52,12 @@ bmrsIndoItsdo <- function(fromdate,
     my_url <- base::sprintf("%s?APIKey=%s&FromDate=%s&ToDate=%s&ServiceType=csv",
                             apiurl, apikey, startdate, base::min(as.Date(todate), startdate+batchsize-1))
 
-    results <- httr::GET(my_url)
-    response <- httr::content(results,"text")
+    result <- httr::GET(my_url)
+
+    # Throws an error if the HTTP status code is not 200
+    stopifnot(result$status_code == 200)
+
+    response <- httr::content(result,"text")
 
     my_data <- utils::read.csv(text = response,
                                skip = 1,
