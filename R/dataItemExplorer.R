@@ -107,7 +107,7 @@ dataItemExplorer<- function(dataitems,
     stopifnot(result$status_code == 200)
 
     # Writes SOAP response into character
-    soap.response <- content(result, "text")
+    soap.response <- httr::content(result, "text")
 
     # converts SOAP response into an XML object
     soap.response.doc <- XML::xmlTreeParse(soap.response, replaceEntities = TRUE , useInternalNodes = TRUE)
