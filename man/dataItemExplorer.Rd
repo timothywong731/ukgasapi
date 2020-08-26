@@ -22,7 +22,7 @@ dataItemExplorer(dataitems, fromdate, todate, datetype = "gasday",
 
 \item{applicableforflag}{A character object with length of one to specify whether dates specified are 'applicable for' or 'applicable on'. This can either be \code{Y} or \code{N} where \code{Y} indicates 'applicable for'. Defaults to \code{Y}.}
 
-\item{batchsize}{An interger value indicating the batch size of each API call. To invoke a single API call, use any zero of negative values.}
+\item{batchsize}{An interger value indicating the batch size of each API call. To invoke a single API call, use zero or negative values.}
 
 \item{apiurl}{A character object which points to National Grid's SOAP API. Under most circumstances users do not have to change this. Defaults to 'http://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx'}
 }
@@ -33,21 +33,22 @@ A dataframe object containing API response data.
 This function connects to the UK National Grid's API for Data Item Explorer, which is a major data source for gas-related information. Internet connection must be available.
 }
 \details{
-The function submits an enquiry to the destination API using XML over HTTP using SOAP standard. The HTTP response is in XML format which function will parse internally and return a R dataframe object.
+The function submits a request to the API using XML over SOAP protocol. The response is in XML format which function will parse internally and returns a R dataframe object.
 }
 \examples{
 # Specify the data item(s) to enquire from API
 dataitems <- c("Storage Injection, Actual",
                "Storage Withdrawal, Actual")
 
-# Initialise API (requires internet connection for this step)
+# Invoke the API (requires internet connection at this step)
 response <- dataItemExplorer(dataitems,
-                             fromdate = "2013-10-01",
+                             fromdate = "2015-09-01",
                              todate="2015-09-30")
 
 # Visualise the results on a chart
 library(ggplot2)
-ggplot(response,aes(x=ApplicableFor,y=Value,colour=PublicationObjectName)) + geom_line()
+ggplot(response,aes(x=ApplicableFor,y=Value,colour=PublicationObjectName)) +
+ geom_line()
 }
 \references{
 \itemize{
