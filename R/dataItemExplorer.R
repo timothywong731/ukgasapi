@@ -104,7 +104,7 @@ dataItemExplorer<- function(dataitems,
                                                         "Content-Type"="application/soap+xml; charset=utf-8")))
 
     # Throws an error if the HTTP status code is not 200
-    stopifnot(result$status_code == 200)
+    base::stopifnot(result$status_code == 200)
 
     # Writes SOAP response into character
     soap.response <- httr::content(result, "text")

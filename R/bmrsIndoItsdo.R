@@ -55,7 +55,7 @@ bmrsIndoItsdo <- function(fromdate,
     result <- httr::GET(my_url)
 
     # Throws an error if the HTTP status code is not 200
-    stopifnot(result$status_code == 200)
+    base::stopifnot(result$status_code == 200)
 
     response <- httr::content(result,"text")
 
