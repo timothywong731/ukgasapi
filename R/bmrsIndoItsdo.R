@@ -1,10 +1,11 @@
 #' @title BMRS Initial Demand Outturn API Service
 #' @description This function connects to the Elexon's BMRS API to retrieve Initial Demand Outturn (INDO) and Initial Transmission System Demand Out-Turn (ITSDO) data. Internet connection must be available.
-#' @details The function submits a request to the API. The response is in CSV format which function will parse internally and returns a R dataframe object. The data returned by this API is identical to the data displayed on BMRS dashboard \url{https://test2.bmreports.com/bmrs/?q=demand/initialdemandoutturn}.
+#' @details The function submits a request to the API. The response is in CSV format which function will parse internally and returns a R dataframe object. The data returned by this API is identical to the data displayed on BMRS dashboard \url{https://www.bmreports.com/bmrs/?q=demand/initialdemandoutturn}.
 #' @param fromdate A character object specifying the start date. Date is inclusive.
 #' @param todate A character object specifying the end date. Date is inclusive.
 #' @param apikey A character object specifying the API key. This is also known as scripting key on Elexon's website.
 #' @param batchsize An interger value indicating the batch size of each API call. (Number of days included in one call)
+#' @param apiurl A character object which points to the BMRS INDO/ITSDO API. Under most circumstances users do not have to change this. Default to 'https://api.bmreports.com/BMRS/INDOITSDO/v1'
 #' @return A dataframe object containing API response data.
 #' @examples
 #' \dontrun{
@@ -24,7 +25,7 @@
 #' \item BMRS API and Data Push User Guide\cr
 #' \url{https://www.elexon.co.uk/documents/training-guidance/bsc-guidance-notes/bmrs-api-and-data-push-user-guide-2/}
 #' \item Scripting Guide\cr
-#' \url{https://www.elexonportal.co.uk/scripting?cachebust=5fo1t1pld7}
+#' \url{https://www.elexonportal.co.uk/scripting}
 #' \item Initial Demand Outturn (INDO)\cr
 #' \url{https://www.bmreports.com/bmrs/?q=help/glossary#INDO}
 #' \item Initial Transmission System Demand Out-Turn (ITSDO)\cr

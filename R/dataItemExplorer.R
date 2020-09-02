@@ -8,7 +8,7 @@
 #' @param latestflag A character object with length of one to specify whether to extract the latest data. This can either be \code{Y} or \code{N}. Defaults to \code{Y}.
 #' @param applicableforflag A character object with length of one to specify whether dates specified are 'applicable for' or 'applicable on'. This can either be \code{Y} or \code{N} where \code{Y} indicates 'applicable for'. Defaults to \code{Y}.
 #' @param batchsize An interger value indicating the batch size of each API call. To invoke a single API call, use zero or negative values.
-#' @param apiurl A character object which points to National Grid's SOAP API. Under most circumstances users do not have to change this. Defaults to 'http://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx'
+#' @param apiurl A character object which points to National Grid's SOAP API. Under most circumstances users do not have to change this. Default to 'http://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx'
 #' @return A dataframe object containing API response data.
 #' @examples
 #' # Specify the data item(s) to enquire from API

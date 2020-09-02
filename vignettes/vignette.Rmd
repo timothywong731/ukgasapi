@@ -21,7 +21,7 @@ The National Grid publishes live market information through Market Information P
 
 # Calling the API
 
-The function `dataItemExplorer` calls the MIPI API and returns data from the [Data Item Explorer](https://mip-prod-web.azurewebsites.net/DataItemExplorer). The first argument `dataitems` is a character vector of data items where multiple values are accepted. It must match with the data items provided on the Data Item Explorer. This function also requires `fromdate` and `todate` which specify the date range to return data from. The return type is a `data.frame` object.
+The function `dataItemExplorer` calls the MIPI API and returns data from the [Data Item Explorer](http://mip-prd-web.azurewebsites.net/DataItemExplorer). The first argument `dataitems` is a character vector of data items where multiple values are accepted. It must match with the data items provided on the Data Item Explorer. This function also requires `fromdate` and `todate` which specify the date range to return data from. The return type is a `data.frame` object.
 
 ```{r, results='hide'}
 response <- dataItemExplorer(dataitems = c("Storage Injection, Actual",
