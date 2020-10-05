@@ -17,8 +17,8 @@
 #'
 #' # Invoke the API (requires internet connection at this step)
 #' response <- dataItemExplorer(dataitems,
-#'                              fromdate = "2015-09-01",
-#'                              todate="2015-09-30")
+#'                              fromdate = "2020-01-01",
+#'                              todate="2020-01-31")
 #'
 #' # Visualise the results on a chart
 #' library(ggplot2)

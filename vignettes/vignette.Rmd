@@ -26,8 +26,8 @@ The function `dataItemExplorer` calls the MIPI API and returns data from the [Da
 ```{r, results='hide'}
 response <- dataItemExplorer(dataitems = c("Storage Injection, Actual",
                                            "Storage Withdrawal, Actual"),
-                             fromdate = "2017-01-01",
-                             todate = "2017-12-31")
+                             fromdate = "2020-01-01",
+                             todate = "2020-06-30")
 head(response, 10)
 ```
 
@@ -42,8 +42,8 @@ The National Grid API has certain limit of the size of the query. As a result, w
 ```{r, eval=FALSE}
 response <- dataItemExplorer(dataitems = c("Storage Injection, Actual",
                                            "Storage Withdrawal, Actual"),
-                             fromdate = "2017-01-01",
-                             todate = "2017-12-31",
+                             fromdate = "2020-01-01",
+                             todate = "2020-06-30",
                              batchsize = 20)
 ```
 

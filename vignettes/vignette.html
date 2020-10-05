@@ -1,28 +1,44 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <meta name="author" content="Timothy Wong" />
 
-<meta name="date" content="2019-05-14" />
+<meta name="date" content="2020-10-05" />
 
 <title>UK Gas Market Information</title>
 
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
 
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -32,14 +48,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -48,9 +66,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -96,7 +114,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -117,9 +135,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -288,7 +303,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -303,20 +319,30 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">UK Gas Market Information</h1>
 <h4 class="author">Timothy Wong</h4>
-<h4 class="date">2019-05-14</h4>
+<h4 class="date">2020-10-05</h4>
 
 
 
 <p>The National Grid publishes live market information through Market Information Provision Initiative (MIPI) API. It hosts a large volume of data (over 13,500 data items)<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> and is used extensively on a daily basis.</p>
 <div id="calling-the-api" class="section level1">
 <h1>Calling the API</h1>
-<p>The function <code>dataItemExplorer</code> calls the MIPI API and returns data from the <a href="https://mip-prod-web.azurewebsites.net/DataItemExplorer">Data Item Explorer</a>. The first argument <code>dataitems</code> is a character vector of data items where multiple values are accepted. It must match with the data items provided on the Data Item Explorer. This function also requires <code>fromdate</code> and <code>todate</code> which specify the date range to return data from. The return type is a <code>data.frame</code> object.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">response &lt;-<span class="st"> </span><span class="kw">dataItemExplorer</span>(<span class="dt">dataitems =</span> <span class="kw">c</span>(<span class="st">&quot;Storage Injection, Actual&quot;</span>,</a>
-<a class="sourceLine" id="cb1-2" title="2">                                           <span class="st">&quot;Storage Withdrawal, Actual&quot;</span>),</a>
-<a class="sourceLine" id="cb1-3" title="3">                             <span class="dt">fromdate =</span> <span class="st">&quot;2017-01-01&quot;</span>,</a>
-<a class="sourceLine" id="cb1-4" title="4">                             <span class="dt">todate =</span> <span class="st">&quot;2017-12-31&quot;</span>)</a>
-<a class="sourceLine" id="cb1-5" title="5"><span class="kw">head</span>(response, <span class="dv">10</span>)</a></code></pre></div>
+<p>The function <code>dataItemExplorer</code> calls the MIPI API and returns data from the <a href="http://mip-prd-web.azurewebsites.net/DataItemExplorer">Data Item Explorer</a>. The first argument <code>dataitems</code> is a character vector of data items where multiple values are accepted. It must match with the data items provided on the Data Item Explorer. This function also requires <code>fromdate</code> and <code>todate</code> which specify the date range to return data from. The return type is a <code>data.frame</code> object.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>response &lt;-<span class="st"> </span><span class="kw">dataItemExplorer</span>(<span class="dt">dataitems =</span> <span class="kw">c</span>(<span class="st">&quot;Storage Injection, Actual&quot;</span>,</span>
+<span id="cb1-2"><a href="#cb1-2"></a>                                           <span class="st">&quot;Storage Withdrawal, Actual&quot;</span>),</span>
+<span id="cb1-3"><a href="#cb1-3"></a>                             <span class="dt">fromdate =</span> <span class="st">&quot;2020-01-01&quot;</span>,</span>
+<span id="cb1-4"><a href="#cb1-4"></a>                             <span class="dt">todate =</span> <span class="st">&quot;2020-06-30&quot;</span>)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">head</span>(response, <span class="dv">10</span>)</span></code></pre></div>
 <table>
+<colgroup>
+<col width="14%"></col>
+<col width="10%"></col>
+<col width="7%"></col>
+<col width="14%"></col>
+<col width="12%"></col>
+<col width="8%"></col>
+<col width="14%"></col>
+<col width="18%"></col>
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">ApplicableAt</th>
@@ -331,103 +357,103 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">2017-02-10 15:00:00</td>
-<td align="left">2017-01-01</td>
-<td align="right">654339382</td>
-<td align="left">2017-02-10 15:01:38</td>
+<td align="left">2020-02-12 15:00:00</td>
+<td align="left">2020-01-01</td>
+<td align="right">405136367</td>
+<td align="left">2020-02-12 15:00:11</td>
 <td align="left"></td>
 <td align="left"></td>
-<td align="left">2017-02-10 15:01:38</td>
+<td align="left">2020-02-12 15:01:15</td>
 <td align="left">Storage Injection, Actual</td>
 </tr>
 <tr class="even">
-<td align="left">2017-02-10 15:00:00</td>
-<td align="left">2017-01-02</td>
-<td align="right">191923757</td>
-<td align="left">2017-02-10 15:01:38</td>
+<td align="left">2020-02-12 15:00:00</td>
+<td align="left">2020-01-02</td>
+<td align="right">293337001</td>
+<td align="left">2020-02-12 15:00:11</td>
 <td align="left"></td>
 <td align="left"></td>
-<td align="left">2017-02-10 15:01:39</td>
+<td align="left">2020-02-12 15:01:14</td>
 <td align="left">Storage Injection, Actual</td>
 </tr>
 <tr class="odd">
-<td align="left">2017-02-10 15:00:00</td>
-<td align="left">2017-01-03</td>
-<td align="right">65808124</td>
-<td align="left">2017-02-10 15:01:38</td>
+<td align="left">2020-02-12 15:00:00</td>
+<td align="left">2020-01-03</td>
+<td align="right">141563288</td>
+<td align="left">2020-02-12 15:00:11</td>
 <td align="left"></td>
 <td align="left"></td>
-<td align="left">2017-02-10 15:01:38</td>
+<td align="left">2020-02-12 15:01:14</td>
 <td align="left">Storage Injection, Actual</td>
 </tr>
 <tr class="even">
-<td align="left">2017-02-10 15:00:00</td>
-<td align="left">2017-01-04</td>
-<td align="right">2743671</td>
-<td align="left">2017-02-10 15:01:38</td>
+<td align="left">2020-02-12 15:00:00</td>
+<td align="left">2020-01-04</td>
+<td align="right">79499563</td>
+<td align="left">2020-02-12 15:00:11</td>
 <td align="left"></td>
 <td align="left"></td>
-<td align="left">2017-02-10 15:01:39</td>
+<td align="left">2020-02-12 15:01:14</td>
 <td align="left">Storage Injection, Actual</td>
 </tr>
 <tr class="odd">
-<td align="left">2017-02-10 15:00:00</td>
-<td align="left">2017-01-05</td>
-<td align="right">72190668</td>
-<td align="left">2017-02-10 15:01:38</td>
+<td align="left">2020-02-12 15:00:00</td>
+<td align="left">2020-01-05</td>
+<td align="right">101118178</td>
+<td align="left">2020-02-12 15:00:11</td>
 <td align="left"></td>
 <td align="left"></td>
-<td align="left">2017-02-10 15:01:40</td>
+<td align="left">2020-02-12 15:01:14</td>
 <td align="left">Storage Injection, Actual</td>
 </tr>
 <tr class="even">
-<td align="left">2017-02-10 15:00:00</td>
-<td align="left">2017-01-06</td>
-<td align="right">2582168</td>
-<td align="left">2017-02-10 15:01:38</td>
+<td align="left">2020-02-12 15:00:00</td>
+<td align="left">2020-01-06</td>
+<td align="right">33821962</td>
+<td align="left">2020-02-12 15:00:11</td>
 <td align="left"></td>
 <td align="left"></td>
-<td align="left">2017-02-10 15:01:46</td>
+<td align="left">2020-02-12 15:01:14</td>
 <td align="left">Storage Injection, Actual</td>
 </tr>
 <tr class="odd">
-<td align="left">2017-02-10 15:00:00</td>
-<td align="left">2017-01-07</td>
-<td align="right">202786018</td>
-<td align="left">2017-02-10 15:01:38</td>
+<td align="left">2020-02-12 15:00:00</td>
+<td align="left">2020-01-07</td>
+<td align="right">133257153</td>
+<td align="left">2020-02-12 15:00:11</td>
 <td align="left"></td>
 <td align="left"></td>
-<td align="left">2017-02-10 15:01:40</td>
+<td align="left">2020-02-12 15:01:14</td>
 <td align="left">Storage Injection, Actual</td>
 </tr>
 <tr class="even">
-<td align="left">2017-02-10 15:00:00</td>
-<td align="left">2017-01-08</td>
-<td align="right">354960293</td>
-<td align="left">2017-02-10 15:01:38</td>
+<td align="left">2020-02-12 15:00:00</td>
+<td align="left">2020-01-08</td>
+<td align="right">55575565</td>
+<td align="left">2020-02-12 15:00:11</td>
 <td align="left"></td>
 <td align="left"></td>
-<td align="left">2017-02-10 15:01:45</td>
+<td align="left">2020-02-12 15:01:15</td>
 <td align="left">Storage Injection, Actual</td>
 </tr>
 <tr class="odd">
-<td align="left">2017-02-10 15:00:00</td>
-<td align="left">2017-01-09</td>
-<td align="right">247556567</td>
-<td align="left">2017-02-10 15:01:38</td>
+<td align="left">2020-02-12 15:00:00</td>
+<td align="left">2020-01-09</td>
+<td align="right">17732404</td>
+<td align="left">2020-02-12 15:00:11</td>
 <td align="left"></td>
 <td align="left"></td>
-<td align="left">2017-02-10 15:01:39</td>
+<td align="left">2020-02-12 15:01:14</td>
 <td align="left">Storage Injection, Actual</td>
 </tr>
 <tr class="even">
-<td align="left">2017-02-10 15:00:00</td>
-<td align="left">2017-01-10</td>
-<td align="right">121739669</td>
-<td align="left">2017-02-10 15:01:38</td>
+<td align="left">2020-02-12 15:00:00</td>
+<td align="left">2020-01-10</td>
+<td align="right">38901321</td>
+<td align="left">2020-02-12 15:00:11</td>
 <td align="left"></td>
 <td align="left"></td>
-<td align="left">2017-02-10 15:01:45</td>
+<td align="left">2020-02-12 15:01:14</td>
 <td align="left">Storage Injection, Actual</td>
 </tr>
 </tbody>
@@ -436,36 +462,34 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="using-batch-mode" class="section level1">
 <h1>Using batch mode</h1>
 <p>The National Grid API has certain limit of the size of the query. As a result, we need to implement batch mode if the query it too large. The <code>batchsize</code> argument can be configured to limit the size of each API call. It will loop through all dates iteratively and return all results.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">response &lt;-<span class="st"> </span><span class="kw">dataItemExplorer</span>(<span class="dt">dataitems =</span> <span class="kw">c</span>(<span class="st">&quot;Storage Injection, Actual&quot;</span>,</a>
-<a class="sourceLine" id="cb2-2" title="2">                                           <span class="st">&quot;Storage Withdrawal, Actual&quot;</span>),</a>
-<a class="sourceLine" id="cb2-3" title="3">                             <span class="dt">fromdate =</span> <span class="st">&quot;2017-01-01&quot;</span>,</a>
-<a class="sourceLine" id="cb2-4" title="4">                             <span class="dt">todate =</span> <span class="st">&quot;2017-12-31&quot;</span>,</a>
-<a class="sourceLine" id="cb2-5" title="5">                             <span class="dt">batchsize =</span> <span class="dv">20</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>response &lt;-<span class="st"> </span><span class="kw">dataItemExplorer</span>(<span class="dt">dataitems =</span> <span class="kw">c</span>(<span class="st">&quot;Storage Injection, Actual&quot;</span>,</span>
+<span id="cb2-2"><a href="#cb2-2"></a>                                           <span class="st">&quot;Storage Withdrawal, Actual&quot;</span>),</span>
+<span id="cb2-3"><a href="#cb2-3"></a>                             <span class="dt">fromdate =</span> <span class="st">&quot;2020-01-01&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4"></a>                             <span class="dt">todate =</span> <span class="st">&quot;2020-06-30&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5"></a>                             <span class="dt">batchsize =</span> <span class="dv">20</span>)</span></code></pre></div>
 </div>
 <div id="visualising-the-api-response" class="section level1">
 <h1>Visualising the API response</h1>
 <p>Since the return type is a <code>data.frame</code> object, users can use standard plotting packages such as <code>ggplot2</code> to visualise the response.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="co">#&gt; Registered S3 methods overwritten by &#39;ggplot2&#39;:</span></a>
-<a class="sourceLine" id="cb3-3" title="3"><span class="co">#&gt;   method         from </span></a>
-<a class="sourceLine" id="cb3-4" title="4"><span class="co">#&gt;   [.quosures     rlang</span></a>
-<a class="sourceLine" id="cb3-5" title="5"><span class="co">#&gt;   c.quosures     rlang</span></a>
-<a class="sourceLine" id="cb3-6" title="6"><span class="co">#&gt;   print.quosures rlang</span></a>
-<a class="sourceLine" id="cb3-7" title="7"><span class="kw">qplot</span>(<span class="dt">x =</span> ApplicableFor,</a>
-<a class="sourceLine" id="cb3-8" title="8">      <span class="dt">y =</span> Value,</a>
-<a class="sourceLine" id="cb3-9" title="9">      <span class="dt">data =</span> response,</a>
-<a class="sourceLine" id="cb3-10" title="10">      <span class="dt">colour =</span> PublicationObjectName,</a>
-<a class="sourceLine" id="cb3-11" title="11">      <span class="dt">geom =</span> <span class="st">&quot;line&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb3-12" title="12"><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</a></code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">library</span>(ggplot2)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">qplot</span>(<span class="dt">x =</span> ApplicableFor,</span>
+<span id="cb3-3"><a href="#cb3-3"></a>      <span class="dt">y =</span> Value,</span>
+<span id="cb3-4"><a href="#cb3-4"></a>      <span class="dt">data =</span> response,</span>
+<span id="cb3-5"><a href="#cb3-5"></a>      <span class="dt">colour =</span> PublicationObjectName,</span>
+<span id="cb3-6"><a href="#cb3-6"></a>      <span class="dt">geom =</span> <span class="st">&quot;line&quot;</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>According to the <a href="https://www.nationalgrid.com/sites/default/files/documents/42797-MIPI%20Update.pdf">National Grid</a><a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn1"><p>According to the <a href="https://www.nationalgrid.com/sites/default/files/documents/42797-MIPI%20Update.pdf">National Grid</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 
+
+
+<!-- code folding -->
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

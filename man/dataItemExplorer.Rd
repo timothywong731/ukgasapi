@@ -4,10 +4,17 @@
 \alias{dataItemExplorer}
 \title{Data Item Explorer API}
 \usage{
-dataItemExplorer(dataitems, fromdate, todate, datetype = "gasday",
-  latestflag = "Y", applicableforflag = "Y", batchsize = -1,
+dataItemExplorer(
+  dataitems,
+  fromdate,
+  todate,
+  datetype = "gasday",
+  latestflag = "Y",
+  applicableforflag = "Y",
+  batchsize = -1,
   apiurl = paste0("https://marketinformation.natgrid.co.uk/",
-  "MIPIws-public/public/publicwebservice.asmx"))
+    "MIPIws-public/public/publicwebservice.asmx")
+)
 }
 \arguments{
 \item{dataitems}{A vector of characters containing data items to enquire via API.}
@@ -24,7 +31,7 @@ dataItemExplorer(dataitems, fromdate, todate, datetype = "gasday",
 
 \item{batchsize}{An interger value indicating the batch size of each API call. To invoke a single API call, use zero or negative values.}
 
-\item{apiurl}{A character object which points to National Grid's SOAP API. Under most circumstances users do not have to change this. Defaults to 'http://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx'}
+\item{apiurl}{A character object which points to National Grid's SOAP API. Under most circumstances users do not have to change this. Default to 'http://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx'}
 }
 \value{
 A dataframe object containing API response data.
@@ -42,8 +49,8 @@ dataitems <- c("Storage Injection, Actual",
 
 # Invoke the API (requires internet connection at this step)
 response <- dataItemExplorer(dataitems,
-                             fromdate = "2015-09-01",
-                             todate="2015-09-30")
+                             fromdate = "2020-01-01",
+                             todate="2020-01-31")
 
 # Visualise the results on a chart
 library(ggplot2)
