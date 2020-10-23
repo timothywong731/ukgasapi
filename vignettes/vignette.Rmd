@@ -23,16 +23,12 @@ The National Grid publishes live market information through Market Information P
 
 The function `dataItemExplorer` calls the MIPI API and returns data from the [Data Item Explorer](https://mip-prd-web.azurewebsites.net/DataItemExplorer). The first argument `dataitems` is a character vector of data items where multiple values are accepted. It must match with the data items provided on the Data Item Explorer. This function also requires `fromdate` and `todate` which specify the date range to return data from. The return type is a `data.frame` object.
 
-```{r, results='hide'}
+```{r, results='hide', eval=FALSE}
 response <- dataItemExplorer(dataitems = c("Storage Injection, Actual",
                                            "Storage Withdrawal, Actual"),
                              fromdate = "2020-01-01",
                              todate = "2020-06-30")
 head(response, 10)
-```
-
-```{r,echo=FALSE,results='asis'}
-knitr::kable(head(response,10))
 ```
 
 # Using batch mode
@@ -51,7 +47,7 @@ response <- dataItemExplorer(dataitems = c("Storage Injection, Actual",
 
 Since the return type is a `data.frame` object, users can use standard plotting packages such as `ggplot2` to visualise the response.
 
-```{r,echo=TRUE,results='asis',fig.show='hold'}
+```{r, echo=TRUE, eval=FALSE}
 library(ggplot2)
 qplot(x = ApplicableFor,
       y = Value,

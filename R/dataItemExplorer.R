@@ -11,6 +11,7 @@
 #' @param apiurl A character object which points to National Grid's SOAP API. Under most circumstances users do not have to change this. Default to 'http://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx'
 #' @return A dataframe object containing API response data.
 #' @examples
+#' \dontrun{
 #' # Specify the data item(s) to enquire from API
 #' dataitems <- c("Storage Injection, Actual",
 #'                "Storage Withdrawal, Actual")
@@ -24,6 +25,7 @@
 #' library(ggplot2)
 #' ggplot(response,aes(x=ApplicableFor,y=Value,colour=PublicationObjectName)) +
 #'  geom_line()
+#' }
 #' @author Timothy Wong, \email{timothy.wong@@hotmail.co.uk}
 #' @references
 #' \itemize{
