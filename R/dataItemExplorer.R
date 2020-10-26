@@ -30,7 +30,7 @@
 #' @references
 #' \itemize{
 #' \item Graphical User Interface for Data Item Explorer\cr
-#' \url{https://mip-prod-web.azurewebsites.net/DataItemExplorer}
+#' \url{https://mip-prd-web.azurewebsites.net/DataItemExplorer}
 #' \item API specification\cr
 #' \url{https://marketinformation.natgrid.co.uk/MIPIws-public/public/publicwebservice.asmx?op=GetPublicationDataWM}
 #' }
