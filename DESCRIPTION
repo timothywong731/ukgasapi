@@ -9,7 +9,6 @@ Depends: R (>= 3.0.0)
 BugReports: https://github.com/timothywong731/ukgasapi/issues
 License: GPL-2
 Imports: httr,XML
-LazyData: true
 Suggests: ggplot2, knitr, rmarkdown
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
